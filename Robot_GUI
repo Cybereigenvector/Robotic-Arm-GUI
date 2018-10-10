@@ -31,6 +31,7 @@ Theta_2 = 40
 # This function queries the PLC to get the Specification of the Robotic arm
 # -------------------------------------------------------------------------------------------------
 def get_specs():
+    global x, y, x1, y1
     # Declaring Modbus PLC
     print("The IP address of the PLC is:",sys.argv[1])
     #Declaring the modbus client
@@ -40,17 +41,32 @@ def get_specs():
         print("Error with host or port number")
 
     while True:
+        #check the connectivity of the TCP client to the GUI to the PLC
+        if not client.is_open():
+            if not client.open():
+                print("Unable to Connect to "+ sys.argv[1] +":502")
+
         # Reading the coil for current lengths and the thetas
         theta_list = client.read_input_registers(2, reg_nb=2)
+
         #Print the list of the thetas
         print (theta_list)
-        # Get the length of the arms from the MODBUS memory of the PLC
+
+        # Get the length of the arms from the MODBUS memory of the PLC to local variables
         length_1=100
         length_2=200
-        # Get the current Theta positions of the arms from the MODBUS memory of the PLC
-        Theta_1=30
-        Theta_2=45
-        time.sleep(5)
+
+        # Get the current Theta positions of the arms from the MODBUS memory of the PLC to local variables
+        Theta_1=theta_list[0]
+        Theta_2=theta_list[0] + theta_list[1]
+
+        #Calculate the coordinates
+        calculate_coordinates(length_1,length_2,Theta_1,Theta_2)
+
+        #Generate the GUI
+        create_graphics(x1,y1,x,y)
+
+        time.sleep(0.01)
 
 # -------------------------------------------------------------------------------------------------
 # This function calculates the coordinates of the arm
@@ -72,27 +88,33 @@ def calculate_coordinates(length_1,length_2,Theta_1,Theta_2):
 def create_graphics(x1,y1,x,y):
     #Drawing the robotic arm in pygame
     pygame.init()
+    coordinate1 = pygame.font.SysFont("Courier", 16)
+    coordinate2 = pygame.font.SysFont("Courier", 16)
     size = [550, 550]
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("Robotic Arm")
 
-
     #Declaring the colors required int he graphics. This is in RGB format
     BLACK = (0,0,0)
-    BLACK = (0,0,0)
-    WHITE = (255,255,255)
+    GREY = (169,169,169)
     BLUE  = (0,0,255)
     GREEN = (0,255,0)
     RED   = (255,0,0)
 
-    screen.fill(BLACK)
+    #Declaring clock
+
+    screen.fill(GREY)
     pygame.draw.line(screen, GREEN,[275, 275], [275+x1,275-y1], 5)
     pygame.draw.line(screen, GREEN,[275+x1,275-y1], [275+x,275-y], 5)
     pygame.draw.circle(screen, BLUE, [275, 275], 7)
     pygame.draw.circle(screen, BLUE, [275+round(x1), 275-round(y1)], 7)
     pygame.draw.circle(screen, BLUE, [275+round(x), 275-round(y)], 7)
-    pygame.display.flip()
-    time.sleep(5)
+    #rect=pygame.Rect(275,275,275+round(x),275-round(y))
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            sys.exit(0)
+    pygame.display.update()
+
 
 # -------------------------------------------------------------------------------------------------
 # Main Function controlling the flow of the program
