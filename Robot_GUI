@@ -8,29 +8,55 @@
 import math
 import pygame
 import time
+import sys
+from pyModbusTCP.client import ModbusClient
 
 # -------------------------------------------------------------------------------------------------
 # Declaring the specification fo the robotic arm as global variable. The coordinates are also
 # declared as global variable
 # -------------------------------------------------------------------------------------------------
-
-
+# Declaring the coordinate of the two joints of the robotic arm
+x = 0
+y = 0
+x1 = 0
+y1 = 0
+# Get the length of the arms from the MODBUS memory of the PLC
+length_1 = 100
+length_2 = 200
+# Get the current Theta positions of the arms from the MODBUS memory of the PLC
+Theta_1 = 30
+Theta_2 = 40
 
 # -------------------------------------------------------------------------------------------------
 # This function queries the PLC to get the Specification of the Robotic arm
 # -------------------------------------------------------------------------------------------------
 def get_specs():
-    # Get the length of the arms from the MODBUS memory of the PLC
-    length_1=100
-    length_2=200
-    # Get the current Theta positions of the arms from the MODBUS memory of the PLC
-    Theta_1=30
-    Theta_2=50
+    # Declaring Modbus PLC
+    print("The IP address of the PLC is:",sys.argv[1])
+    #Declaring the modbus client
+    try:
+        client = ModbusClient(host=sys.argv[1],port=502)
+    except ValueError:
+        print("Error with host or port number")
+
+    while True:
+        # Reading the coil for current lengths and the thetas
+        theta_list = client.read_input_registers(2, reg_nb=2)
+        #Print the list of the thetas
+        print (theta_list)
+        # Get the length of the arms from the MODBUS memory of the PLC
+        length_1=100
+        length_2=200
+        # Get the current Theta positions of the arms from the MODBUS memory of the PLC
+        Theta_1=30
+        Theta_2=45
+        time.sleep(5)
 
 # -------------------------------------------------------------------------------------------------
 # This function calculates the coordinates of the arm
 # -------------------------------------------------------------------------------------------------
-def calculate_coordinates(length_1,length_2,Theta_1,Theta):
+def calculate_coordinates(length_1,length_2,Theta_1,Theta_2):
+    global x,y,x1,y1
     # Calculating the coordinate of the first joint
     x1= length_1*(math.cos(Theta_1*0.0174533))
     y1= length_1*(math.sin(Theta_1*0.0174533))
@@ -46,7 +72,7 @@ def calculate_coordinates(length_1,length_2,Theta_1,Theta):
 def create_graphics(x1,y1,x,y):
     #Drawing the robotic arm in pygame
     pygame.init()
-    size = [500, 500]
+    size = [550, 550]
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("Robotic Arm")
 
@@ -60,11 +86,11 @@ def create_graphics(x1,y1,x,y):
     RED   = (255,0,0)
 
     screen.fill(BLACK)
-    pygame.draw.line(screen, GREEN,[250, 250], [250+x1,250+y1], 5)
-    pygame.draw.line(screen, GREEN,[250+x1,250+y1], [250+x,250+y], 5)
-    pygame.draw.circle(screen, BLUE, [250, 250], 7)
-    pygame.draw.circle(screen, BLUE, [250+round(x1), 250+round(y1)], 7)
-    pygame.draw.circle(screen, BLUE, [250+round(x), 250+round(y)], 7)
+    pygame.draw.line(screen, GREEN,[275, 275], [275+x1,275-y1], 5)
+    pygame.draw.line(screen, GREEN,[275+x1,275-y1], [275+x,275-y], 5)
+    pygame.draw.circle(screen, BLUE, [275, 275], 7)
+    pygame.draw.circle(screen, BLUE, [275+round(x1), 275-round(y1)], 7)
+    pygame.draw.circle(screen, BLUE, [275+round(x), 275-round(y)], 7)
     pygame.display.flip()
     time.sleep(5)
 
@@ -72,23 +98,13 @@ def create_graphics(x1,y1,x,y):
 # Main Function controlling the flow of the program
 # -------------------------------------------------------------------------------------------------
 def main():
-    # Declaring the coordinate of the two joints of the robotic arm
-    x = 0
-    y = 0
-    x1 = 0
-    y1 = 0
-    # Get the length of the arms from the MODBUS memory of the PLC
-    length_1 = 100
-    length_2 = 200
-    # Get the current Theta positions of the arms from the MODBUS memory of the PLC
-    Theta_1 = 30
-    Theta_2 = 50
-
     # Get the specification of the robotic arms fromt the PLC
     get_specs()
-
     # Calculate the coordinates of the Robotic arms
     calculate_coordinates(length_1,length_2,Theta_1,Theta_2)
+    print("The final coordinate of the Robotic arm:(x1,y1)", x1, y1)
+    print("The final coordinate of the Robotic arm:(x,y)", x, y)
+    create_graphics(x1, y1, x, y)
 
 
 
