@@ -30,42 +30,88 @@ Theta_2 = 40
 # -------------------------------------------------------------------------------------------------
 # This function queries the PLC to get the Specification of the Robotic arm
 # -------------------------------------------------------------------------------------------------
-def get_specs():
+def run_gui():
     global x, y, x1, y1
     # Declaring Modbus PLC
     print("The IP address of the PLC is:",sys.argv[1])
+
     #Declaring the modbus client
     try:
         client = ModbusClient(host=sys.argv[1],port=502)
     except ValueError:
         print("Error with host or port number")
 
-    while True:
-        #check the connectivity of the TCP client to the GUI to the PLC
+    # Drawing the robotic arm in pygame. the one time initilization is performed to use the Pygame instance
+    pygame.init()
+    coordinate1 = pygame.font.SysFont("Courier", 16)
+    coordinate2 = pygame.font.SysFont("Courier", 16)
+    size = [550, 550]
+    screen = pygame.display.set_mode(size)
+    pygame.display.set_caption("Robotic Arm")
+
+    # Declaring the colors required int he graphics. This is in RGB format
+    BLACK = (0, 0, 0)
+    GREY = (169, 169, 169)
+    BLUE = (0, 0, 255)
+    GREEN = (0, 255, 0)
+    RED = (255, 0, 0)
+
+    run= True
+    # This is the main loop that gets the current position of the robotic arm and updates the graphics after
+    # every 100 ms
+    while run:
+        # -----------------------------------------------------------------------------------------
+        # MODBUS Section of the loop. The reading of the registers are collected fromt he PLC memory
+        # -----------------------------------------------------------------------------------------
+        # check the connectivity of the TCP client to the GUI to the PLC
         if not client.is_open():
             if not client.open():
-                print("Unable to Connect to "+ sys.argv[1] +":502")
+                print("Unable to Connect to " + sys.argv[1] + ":502")
 
         # Reading the coil for current lengths and the thetas
         theta_list = client.read_input_registers(2, reg_nb=2)
 
-        #Print the list of the thetas
-        print (theta_list)
+        # Print the list of the thetas
+        print(theta_list)
 
         # Get the length of the arms from the MODBUS memory of the PLC to local variables
-        length_1=100
-        length_2=200
+        length_1 = 100
+        length_2 = 200
 
         # Get the current Theta positions of the arms from the MODBUS memory of the PLC to local variables
-        Theta_1=theta_list[0]
-        Theta_2=theta_list[0] + theta_list[1]
+        Theta_1 = theta_list[0]
+        Theta_2 = theta_list[0] + theta_list[1]
 
-        #Calculate the coordinates
-        calculate_coordinates(length_1,length_2,Theta_1,Theta_2)
+        # Calculate the coordinates
+        calculate_coordinates(length_1, length_2, Theta_1, Theta_2)
 
-        #Generate the GUI
-        create_graphics(x1,y1,x,y)
-
+        # -----------------------------------------------------------------------------------------
+        # This section of the loop creates the GUI of the robotic arm kusing the pygame library
+        # -----------------------------------------------------------------------------------------
+        # Declaring clock for mrasuring the frame rate
+        frame_count = 0
+        frame_rate = 0
+        t0 = time.clock()
+        frame_count += 1
+        if frame_count % 500 == 0:
+            t1 = time.clock()
+            frame_rate = 500 / (t1 - t0)
+            t0 = t1
+        screen.fill(GREY)
+        # Drawing the robotic arm in pygame
+        pygame.draw.line(screen, GREEN, [275, 275], [275 + x1, 275 - y1], 5)
+        pygame.draw.line(screen, GREEN, [275 + x1, 275 - y1], [275 + x, 275 - y], 5)
+        pygame.draw.circle(screen, BLUE, [275, 275], 7)
+        pygame.draw.circle(screen, BLUE, [275 + round(x1), 275 - round(y1)], 7)
+        pygame.draw.circle(screen, BLUE, [275 + round(x), 275 - round(y)], 7)
+        text1 = coordinate1.render("Frame = {0},  rate = {1:.2f} fps".format(frame_count, frame_rate), True, (0, 0, 0))
+        screen.blit(text1, (10, 10))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                run = False
+                sys.exit(0)
+        pygame.display.update()
         time.sleep(0.01)
 
 # -------------------------------------------------------------------------------------------------
@@ -102,6 +148,15 @@ def create_graphics(x1,y1,x,y):
     RED   = (255,0,0)
 
     #Declaring clock
+    frame_count = 0
+    frame_rate = 0
+    t0 = time.clock()
+
+    frame_count += 1
+    if frame_count % 500 == 0:
+        t1 = time.clock()
+        frame_rate = 500 / (t1 - t0)
+        t0 = t1
 
     screen.fill(GREY)
     pygame.draw.line(screen, GREEN,[275, 275], [275+x1,275-y1], 5)
@@ -110,8 +165,11 @@ def create_graphics(x1,y1,x,y):
     pygame.draw.circle(screen, BLUE, [275+round(x1), 275-round(y1)], 7)
     pygame.draw.circle(screen, BLUE, [275+round(x), 275-round(y)], 7)
     #rect=pygame.Rect(275,275,275+round(x),275-round(y))
+    text1=coordinate1.render("Frame = {0},  rate = {1:.2f} fps".format(frame_count, frame_rate), True, (0, 0, 0))
+    screen.blit(text1, (10, 10))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            pygame.quit()
             sys.exit(0)
     pygame.display.update()
 
@@ -121,7 +179,7 @@ def create_graphics(x1,y1,x,y):
 # -------------------------------------------------------------------------------------------------
 def main():
     # Get the specification of the robotic arms fromt the PLC
-    get_specs()
+    run_gui()
     # Calculate the coordinates of the Robotic arms
     calculate_coordinates(length_1,length_2,Theta_1,Theta_2)
     print("The final coordinate of the Robotic arm:(x1,y1)", x1, y1)
