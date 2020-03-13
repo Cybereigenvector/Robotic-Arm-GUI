@@ -42,6 +42,7 @@ def run_gui():
     size = [550, 550]
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("Robotic Arm-Rishabh Das-UAH")
+    message = pygame.font.SysFont("monospace",10) 
 
     # Declaring the colors required int he graphics. This is in RGB format
     BLACK = (0, 0, 0)
@@ -102,9 +103,10 @@ def run_gui():
             pygame.draw.circle(screen, BLUE, [275 + round(x), 275 - round(y)], 7)
 
             
-            message = pygame.font.SysFont("monospace",15) 
-            message.render("Hello",1,GREEN)
-            screen.blit(message,(275, 275))
+            disp_coor1=message.render("("+str(int(x1))+","+str(int(y1))+")",1,GREEN)
+            disp_coor2=message.render("("+str(int(x))+","+str(int(y))+")",1,GREEN)
+            screen.blit(disp_coor1,(275 + round(x1), 275 - round(y1)))
+            screen.blit(disp_coor2,(275 + round(x), 275 - round(y)))
             
             # Checking if the user clicked on the close button
             for event in pygame.event.get():
@@ -115,7 +117,7 @@ def run_gui():
             pygame.display.update()
 
             #Controls the refresh rate of the robotic arm
-            time.sleep(0.01)
+            time.sleep(0.05)
         else:
             print("Invalid length! The GUI cannot be rendered!")
             sys.exit(0)
