@@ -34,6 +34,13 @@ def run_gui():
         client = ModbusClient(host=sys.argv[1],port=502)
     except ValueError:
         print("Error with host or port number")
+        
+    # Declaring the colors required int he graphics. This is in RGB format
+    BLACK = (0, 0, 0)
+    GREY =  (169, 169, 169)
+    BLUE =  (0, 0, 255)
+    GREEN = (0, 255, 0)
+    RED =   (255, 0, 0)
 
     # Drawing the robotic arm in pygame. The one time initilization is performed to use the Pygame instance
     pygame.init()
@@ -42,14 +49,10 @@ def run_gui():
     size = [550, 550]
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("Robotic Arm-Rishabh Das-UAH")
-    message = pygame.font.SysFont("monospace",10) 
-
-    # Declaring the colors required int he graphics. This is in RGB format
-    BLACK = (0, 0, 0)
-    GREY =  (169, 169, 169)
-    BLUE =  (0, 0, 255)
-    GREEN = (0, 255, 0)
-    RED =   (255, 0, 0)
+    message = pygame.font.SysFont("monospace",10)
+    header = pygame.font.SysFont("monospace",20)
+    
+    
 
     run= True
     # This is the main loop that gets the current position of the robotic arm and updates the graphics after
@@ -107,6 +110,10 @@ def run_gui():
             disp_coor2=message.render("("+str(int(x))+","+str(int(y))+")",1,GREEN)
             screen.blit(disp_coor1,(275 + round(x1), 275 - round(y1)))
             screen.blit(disp_coor2,(275 + round(x), 275 - round(y)))
+            
+            #Displaying Heading
+            title=header.render("Robotic Arm",1,GREEN)
+            screen.blit(title,(210,15))
             
             # Checking if the user clicked on the close button
             for event in pygame.event.get():
