@@ -29,7 +29,7 @@ def run_gui():
     # Declaring Modbus PLC
     print("The IP address of the PLC is:",sys.argv[1])
 
-    #Declaring the modbus client
+    #Declaring the modbus client 
     try:
         client = ModbusClient(host=sys.argv[1],port=502)
     except ValueError:
@@ -101,7 +101,11 @@ def run_gui():
             pygame.draw.circle(screen, BLUE, [275 + round(x1), 275 - round(y1)], 7)
             pygame.draw.circle(screen, BLUE, [275 + round(x), 275 - round(y)], 7)
 
-
+            
+            message = pygame.font.SysFont("monospace",15) 
+            message.render("Hello",1,GREEN)
+            screen.blit(message,(275, 275))
+            
             # Checking if the user clicked on the close button
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -131,6 +135,18 @@ def calculate_coordinates(length_1,length_2,Theta_1,Theta_2):
     print("The final coordinate of the Robotic arm:(x,y)",x,y)
 
 
+# -------------------------------------------------------------------------------------------------
+# Displaying the coordinates of the joints 
+# -------------------------------------------------------------------------------------------------
+def coordinates_joins(text):    
+    TextSurf, TextRect = text_objects(text, largeText)
+    TextRect.center = ((display_width/2),(display_height/2))
+    gameDisplay.blit(TextSurf, TextRect)
+
+def text_objects(text, font):
+    BLACK = (0, 0, 0)
+    textSurface = font.render(text, True, BLACK)
+    return textSurface, textSurface.get_rect()
 
 # -------------------------------------------------------------------------------------------------
 # Main Function controlling the flow of the program
