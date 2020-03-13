@@ -46,11 +46,11 @@ def run_gui():
     pygame.init()
     coordinate1 = pygame.font.SysFont("Courier", 16)
     coordinate2 = pygame.font.SysFont("Courier", 16)
-    size = [550, 550]
+    size = [600, 600]
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("Robotic Arm-Rishabh Das-UAH")
-    message = pygame.font.SysFont("monospace",10)
-    header = pygame.font.SysFont("monospace",20)
+    message = pygame.font.SysFont("monospace",15)
+    header = pygame.font.SysFont("monospace",30,1)
     
     
 
@@ -114,6 +114,12 @@ def run_gui():
             #Displaying Heading
             title=header.render("Robotic Arm",1,GREEN)
             screen.blit(title,(210,15))
+            
+            #Displaying Theta values
+            theta1_values=message.render("Theta first joint:"+str(theta_list[0]),1,GREEN)
+            theta2_values=message.render("Theta second joint:"+str(theta_list[1]),1,GREEN)
+            screen.blit(theta1_values,(400,550))
+            screen.blit(theta2_values,(400,570))
             
             # Checking if the user clicked on the close button
             for event in pygame.event.get():
