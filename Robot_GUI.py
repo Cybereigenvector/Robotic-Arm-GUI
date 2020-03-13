@@ -41,7 +41,7 @@ def run_gui():
     coordinate2 = pygame.font.SysFont("Courier", 16)
     size = [550, 550]
     screen = pygame.display.set_mode(size)
-    pygame.display.set_caption("Robotic Arm")
+    pygame.display.set_caption("Robotic Arm-Rishabh Das-UAH")
 
     # Declaring the colors required int he graphics. This is in RGB format
     BLACK = (0, 0, 0)
@@ -74,8 +74,11 @@ def run_gui():
         length_1 = length_list[0]
         length_2 = length_list[1]
 
-        ratio = (length_1/length_2)
-
+        if length_1 != 0  and length_2 != 0:
+            ratio = (length_1/length_2)
+        else:
+            print("Arm length set to 0 \nCannot render graphics")
+            sys.exit(0)
         length_2 = 250/(ratio+1)
         length_1 = 250 - length_2
 
@@ -90,7 +93,7 @@ def run_gui():
             # -----------------------------------------------------------------------------------------
             # This section of the loop creates the GUI of the robotic arm kusing the pygame library
             # -----------------------------------------------------------------------------------------
-            screen.fill(GREY)
+            screen.fill(BLACK)
             # Drawing the robotic arm in pygame
             pygame.draw.line(screen, GREEN, [275, 275], [275 + x1, 275 - y1], 5)
             pygame.draw.line(screen, GREEN, [275 + x1, 275 - y1], [275 + x, 275 - y], 5)
