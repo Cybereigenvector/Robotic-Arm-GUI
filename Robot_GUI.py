@@ -69,8 +69,8 @@ def run_gui():
         length_list = client.read_holding_registers(4,reg_nb=2)
 
         # Print the list of the thetas
-        print(theta_list)
-        print(length_list)
+        # print(theta_list)
+        # print(length_list)
 
         # Get the length of the arms from the MODBUS memory of the PLC to local variables
         length_1 = length_list[0]
@@ -104,9 +104,10 @@ def run_gui():
             pygame.draw.circle(screen, BLUE, [275 + round(x), 275 - round(y)], 7)
 
             # Calculate the coordinates
-            #calculate_coordinates(length_list[0], length_list[1], Theta_1, Theta_2)
-            disp_coor1=message.render("("+str(int(x1/12.5))+","+str(int(y1/12.5))+")",1,GREEN)
-            disp_coor2=message.render("("+str(int(x/12.5))+","+str(int(y/12.5))+")",1,GREEN)
+            calculate_coordinates(length_list[0], length_list[1], Theta_1, Theta_2)
+            disp_coor1=message.render("("+str(int(x1))+","+str(int(y1))+")",1,GREEN)
+            disp_coor2=message.render("("+str(int(x))+","+str(int(y))+")",1,GREEN)
+            calculate_coordinates(length_1, length_2, Theta_1, Theta_2)
             screen.blit(disp_coor1,(275 + round(x1), 275 - round(y1)))
             screen.blit(disp_coor2,(275 + round(x), 275 - round(y)))
             
@@ -145,8 +146,8 @@ def calculate_coordinates(length_1,length_2,Theta_1,Theta_2):
     # Calculating the coordinate of the end of the robotic arm
     x= length_1*(math.cos(Theta_1*0.0174533)) + length_2*(math.cos(Theta_2*0.0174533))
     y= length_1*(math.sin(Theta_1*0.0174533)) + length_2*(math.sin(Theta_2*0.0174533))
-    print("The final coordinate of the Robotic arm:(x1,y1)",x1,y1)
-    print("The final coordinate of the Robotic arm:(x,y)",x,y)
+    #print("The final coordinate of the Robotic arm:(x1,y1)",x1,y1)
+    #print("The final coordinate of the Robotic arm:(x,y)",x,y)
 
 # -------------------------------------------------------------------------------------------------
 # Main Function controlling the flow of the program
