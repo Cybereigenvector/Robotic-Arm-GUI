@@ -44,13 +44,11 @@ def run_gui():
 
     # Drawing the robotic arm in pygame. The one time initilization is performed to use the Pygame instance
     pygame.init()
-    coordinate1 = pygame.font.SysFont("Courier", 16)
-    coordinate2 = pygame.font.SysFont("Courier", 16)
     size = [600, 600]
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("Robotic Arm-Rishabh Das-UAH")
     message = pygame.font.SysFont("monospace",15)
-    header = pygame.font.SysFont("monospace",30,1)
+    header = pygame.font.SysFont("monospace",30)
     
     
 
@@ -105,15 +103,16 @@ def run_gui():
             pygame.draw.circle(screen, BLUE, [275 + round(x1), 275 - round(y1)], 7)
             pygame.draw.circle(screen, BLUE, [275 + round(x), 275 - round(y)], 7)
 
-            
-            disp_coor1=message.render("("+str(int(x1))+","+str(int(y1))+")",1,GREEN)
-            disp_coor2=message.render("("+str(int(x))+","+str(int(y))+")",1,GREEN)
+            # Calculate the coordinates
+            #calculate_coordinates(length_list[0], length_list[1], Theta_1, Theta_2)
+            disp_coor1=message.render("("+str(int(x1/12.5))+","+str(int(y1/12.5))+")",1,GREEN)
+            disp_coor2=message.render("("+str(int(x/12.5))+","+str(int(y/12.5))+")",1,GREEN)
             screen.blit(disp_coor1,(275 + round(x1), 275 - round(y1)))
             screen.blit(disp_coor2,(275 + round(x), 275 - round(y)))
             
             #Displaying Heading
             title=header.render("Robotic Arm",1,GREEN)
-            screen.blit(title,(210,15))
+            screen.blit(title,(10,1))
             
             #Displaying Theta values
             theta1_values=message.render("Theta first joint:"+str(theta_list[0]),1,GREEN)
@@ -148,20 +147,6 @@ def calculate_coordinates(length_1,length_2,Theta_1,Theta_2):
     y= length_1*(math.sin(Theta_1*0.0174533)) + length_2*(math.sin(Theta_2*0.0174533))
     print("The final coordinate of the Robotic arm:(x1,y1)",x1,y1)
     print("The final coordinate of the Robotic arm:(x,y)",x,y)
-
-
-# -------------------------------------------------------------------------------------------------
-# Displaying the coordinates of the joints 
-# -------------------------------------------------------------------------------------------------
-def coordinates_joins(text):    
-    TextSurf, TextRect = text_objects(text, largeText)
-    TextRect.center = ((display_width/2),(display_height/2))
-    gameDisplay.blit(TextSurf, TextRect)
-
-def text_objects(text, font):
-    BLACK = (0, 0, 0)
-    textSurface = font.render(text, True, BLACK)
-    return textSurface, textSurface.get_rect()
 
 # -------------------------------------------------------------------------------------------------
 # Main Function controlling the flow of the program
