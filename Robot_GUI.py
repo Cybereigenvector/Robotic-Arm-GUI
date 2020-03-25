@@ -80,7 +80,14 @@ def run_gui():
             ratio = (length_1/length_2)
         else:
             print("Arm length set to 0 \nCannot render graphics")
-            sys.exit(0)
+            if length_1 != 0:       #Dulplicate arm length value 
+                length_2=length_1
+            elif length_2 !=0:      #Dulplicate arm length value 
+                length_1=length_2
+            else:                   #Default Values of the Robotic arm length
+                length_1=10
+                length_2=10
+            # sys.exit(0)
         length_2 = 250/(ratio+1)
         length_1 = 250 - length_2
 
