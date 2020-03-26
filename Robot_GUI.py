@@ -101,7 +101,7 @@ def run_gui():
             calculate_coordinates(length_1, length_2, Theta_1, Theta_2)
 
             # -----------------------------------------------------------------------------------------
-            # This section of the loop creates the GUI of the robotic arm kusing the pygame library
+            # This section of the loop creates the GUI of the robotic arm using the pygame library
             # -----------------------------------------------------------------------------------------
             screen.fill(BLACK)
             # Drawing the robotic arm in pygame
